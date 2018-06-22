@@ -1,0 +1,34 @@
+{
+  "variables": {
+    "access_key": "{{env `ALICLOUD_ACCESS_KEY`}}",
+    "secret_key": "{{env `ALICLOUD_SECRET_KEY`}}",
+    "github_name": "{{env `GITHUB_NAME`}}"
+  },
+  "builders": [{
+    "type":"alicloud-ecs",
+    "access_key":"{{user `access_key`}}",
+    "secret_key":"{{user `secret_key`}}",
+    "region":"ap-northeast-1",
+    "image_name":"mosuke5_centos7_base",
+    "source_image":"centos_7_04_64_20G_alibase_201701015.vhd",
+    "ssh_username":"root",
+    "instance_type":"ecs.n4.small",
+    "io_optimized":"true",
+    "internet_charge_type":"PayByTraffic",
+    "image_force_delete":"true"
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sleep 30",
+        "yum install -y ansible"
+      ]
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "playbook.yml",
+      "extra_arguments": [ "--extra-vars \"github_name={{user `github_name`}}\"" ]
+    }
+  ]
+}

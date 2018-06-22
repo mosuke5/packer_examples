@@ -1,0 +1,42 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+    user_name: "deploy"
+  tasks:
+  - name: Update all packages
+    yum: name='*' state=latest
+
+  - name: Install base package group
+    yum: name='@base' state=latest
+
+  - name: Create general user
+    user:
+      name: "{{ user_name }}"
+
+  - name: Change sudoers file
+    lineinfile: >
+      dest=/etc/sudoers
+      backup=yes
+      line="{{ user_name }} ALL=(ALL) NOPASSWD: ALL"
+
+  - name: Set ssh public keys
+    authorized_key:
+      user: "{{ user_name }}"
+      state: present
+      key: "https://github.com/{{ github_name }}.keys"
+
+  - name: Change sshd config(PermitRootLogin)
+    lineinfile: >
+      path=/etc/ssh/sshd_config
+      regexp='^PermitRootLogin'
+      line='PermitRootLogin no'
+
+  - name: Change sshd config(PasswordAuthentication)
+    lineinfile: >
+      path=/etc/ssh/sshd_config
+      regexp='^PasswordAuthentication'
+      line='PasswordAuthentication no'
+
+  - name: Restart sshd
+    service: name=sshd state=restarted
