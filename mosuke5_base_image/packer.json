@@ -9,7 +9,7 @@
     "access_key":"{{user `access_key`}}",
     "secret_key":"{{user `secret_key`}}",
     "region":"ap-northeast-1",
-    "image_name":"mosuke5_centos7_base",
+    "image_name":"mosuke5_centos7_base-{{isotime `2006-01-02T03-04`}}",
     "source_image":"centos_7_04_64_20G_alibase_201701015.vhd",
     "ssh_username":"root",
     "instance_type":"ecs.n4.small",
